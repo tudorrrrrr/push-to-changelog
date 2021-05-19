@@ -2,38 +2,58 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const fs = require('fs').promises
 
+const listItemPrefix = '- '
+
+const getLastCommitSHA = (changelogContents) => {
+  const availableLines = changelogContents
+    .split('\n')
+    .filter((l) => Boolean(l))
+    .filter((l) => l.startsWith(listItemPrefix))
+
+  if (availableLines.length === 0) {
+    return null
+  } else {
+    const url = availableLines[0].split('[commit]')[1].replace('(', '').replace(')', '')
+    return url.split('commit/')[1]
+  }
+}
+
+const processCommits = (commitsData) => {
+  const prefix = core.getInput('prefix') || 'changelog: '
+
+  return commitsData
+    .map((commit) => ({ message: commit.message, sha: commit.html_url }))
+    .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
+    .map((commit) => `${listItemPrefix}${commit.message.replace(prefix, '')} ([commit](${commit.sha}))`)
+}
+
 const main = async () => {
   try {
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)  
     const repo = github.context.repo
 
-    const commitRes = await octokit.rest.git.getCommit({ ...repo, commit_sha: github.context.sha })
-    if (!commitRes.data) throw new Error('Commit not found')
-
-    const commit = commitRes.data.message
-    const sha = commitRes.data.html_url
-
-    const prefix = core.getInput('prefix') || 'changelog: '
     const filePath = core.getInput('filePath')
+    let changelogContents = await fs.readFile(filePath, 'utf8')
 
-    if (commit.toLowerCase().startsWith(prefix)) {
-      let changelogContents = await fs.readFile(filePath, 'utf8')
-      const unreleasedHeader = '## Unreleased'
+    const base = getLastCommitSHA(changelogContents) || github.context.sha
 
-      if (!changelogContents.split('\n').find((l) => l.startsWith(unreleasedHeader))) {
-        // add in the unreleased header
-        changelogContents = `${unreleasedHeader}\n${changelogContents}`
-      }
+    core.info(base)
 
-      // append commit under unreleased header
-      changelogContents = changelogContents.replace(
-        unreleasedHeader,
-        `${unreleasedHeader}\n- ${commit.replace(prefix, '')} ([commit](${sha}))`
-      )
+    const allCommits = await octokit.rest.repos.compareCommits({ ...repo, base, head: 'HEAD' })
+    if (allCommits.data.commits.length === 0) throw new Error('No commits found')
 
-      await fs.writeFile(filePath, changelogContents)
+    const unreleasedHeader = '## Unreleased'
+    if (!changelogContents.split('\n').find((l) => l.startsWith(unreleasedHeader))) {
+      // add in the unreleased header
+      changelogContents = `${unreleasedHeader}\n${changelogContents}`
     }
+
+    // add commits under unreleased header
+    const commits = processCommits(allCommits.data.commits)
+    console.log(commits.join('\n')) // temp
+    changelogContents = changelogContents.replace(unreleasedHeader, `${unreleasedHeader}\n${commits.join('\n')}`)
+    await fs.writeFile(filePath, changelogContents)
   } catch (error) {
     core.setFailed(error.message)
   }

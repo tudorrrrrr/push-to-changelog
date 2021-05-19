@@ -14,4 +14,4 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          filePath: './push-to-changelog/CHANGELOG.md'
+          filePath: './push-to-changelog/tests/CHANGELOG.md'
