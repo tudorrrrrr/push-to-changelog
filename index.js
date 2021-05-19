@@ -12,7 +12,7 @@ const main = async () => {
     if (!commitRes.data) throw new Error('Commit not found')
 
     const commit = commitRes.data.message
-    const sha = commitRes.data.sha
+    const sha = commitRes.data.html_url
 
     const prefix = core.getInput('prefix') || 'changelog: '
     const filePath = core.getInput('filePath')
@@ -29,7 +29,7 @@ const main = async () => {
       // append commit under unreleased header
       changelogContents = changelogContents.replace(
         unreleasedHeader,
-        `${unreleasedHeader}\n* ${commit.replace(prefix, '')} ${sha}`
+        `${unreleasedHeader}\n- ${commit.replace(prefix, '')} ${sha}`
       )
 
       await fs.writeFile(filePath, changelogContents)
