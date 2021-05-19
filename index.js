@@ -29,7 +29,7 @@ const main = async () => {
       // append commit under unreleased header
       changelogContents = changelogContents.replace(
         unreleasedHeader,
-        `${unreleasedHeader}\n* ${commit.replace(prefix, '')} (${sha})`
+        `${unreleasedHeader}\n* ${commit.replace(prefix, '')} ${sha}`
       )
 
       await fs.writeFile(filePath, changelogContents)
