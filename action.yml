@@ -1,0 +1,14 @@
+name: 'Push to changelog'
+description: 'Adds commits to a changelog file'
+inputs:
+  token:
+    description: 'GitHub token'
+    required: true
+  filePath:
+    description: 'Path to your changelog'
+    required: true
+  prefix:
+    description: 'What commits need to start with in order to be added to the changelog'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
