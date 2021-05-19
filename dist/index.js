@@ -6059,7 +6059,7 @@ const core = __nccwpck_require__(186)
 const github = __nccwpck_require__(438)
 const fs = __nccwpck_require__(747).promises
 
-const listItemPrefix = '- '
+const listItemPrefix = '* '
 
 const getLastCommitSHA = (changelogContents) => {
   const availableLines = changelogContents
@@ -6081,6 +6081,7 @@ const processCommits = (commitsData) => {
   return commitsData
     .map((commit) => ({ message: commit.commit.message, sha: commit.html_url }))
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
+    .reverse()
     .map((commit) => `${listItemPrefix}${commit.message.replace(prefix, '')} ([commit](${commit.sha}))`)
 }
 

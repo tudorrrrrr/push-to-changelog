@@ -2,7 +2,7 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const fs = require('fs').promises
 
-const listItemPrefix = '- '
+const listItemPrefix = '* '
 
 const getLastCommitSHA = (changelogContents) => {
   const availableLines = changelogContents
@@ -24,6 +24,7 @@ const processCommits = (commitsData) => {
   return commitsData
     .map((commit) => ({ message: commit.commit.message, sha: commit.html_url }))
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
+    .reverse()
     .map((commit) => `${listItemPrefix}${commit.message.replace(prefix, '')} ([commit](${commit.sha}))`)
 }
 
