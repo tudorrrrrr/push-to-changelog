@@ -13,7 +13,7 @@ const getLastCommitSHA = (changelogContents) => {
   if (availableLines.length === 0) {
     return null
   } else {
-    const url = availableLines[0].split('[commit]')[1].replace('(', '').replace(')', '')
+    const url = availableLines[0].split('[commit]')[1].replace(/[()]/g, '')
     return url.split('commit/')[1]
   }
 }
@@ -22,7 +22,7 @@ const processCommits = (commitsData) => {
   const prefix = core.getInput('prefix') || 'changelog: '
 
   return commitsData
-    .map((commit) => ({ message: commit.message, sha: commit.html_url }))
+    .map((commit) => ({ message: commit.commit.message, sha: commit.html_url }))
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
     .map((commit) => `${listItemPrefix}${commit.message.replace(prefix, '')} ([commit](${commit.sha}))`)
 }
@@ -38,8 +38,6 @@ const main = async () => {
 
     const base = getLastCommitSHA(changelogContents) || github.context.sha
 
-    core.info(base)
-
     const allCommits = await octokit.rest.repos.compareCommits({ ...repo, base, head: 'HEAD' })
     if (allCommits.data.commits.length === 0) throw new Error('No commits found')
 
@@ -51,7 +49,6 @@ const main = async () => {
 
     // add commits under unreleased header
     const commits = processCommits(allCommits.data.commits)
-    console.log(commits.join('\n')) // temp
     changelogContents = changelogContents.replace(unreleasedHeader, `${unreleasedHeader}\n${commits.join('\n')}`)
     await fs.writeFile(filePath, changelogContents)
   } catch (error) {
