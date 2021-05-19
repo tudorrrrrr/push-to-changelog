@@ -6080,13 +6080,13 @@ const main = async () => {
 
       if (!changelogContents.split('\n').find((l) => l.startsWith(unreleasedHeader))) {
         // add in the unreleased header
-        changelogContents = `${unreleasedHeader}\n\n${changelogContents}`
+        changelogContents = `${unreleasedHeader}\n${changelogContents}`
       }
 
       // append commit under unreleased header
       changelogContents = changelogContents.replace(
         unreleasedHeader,
-        `${unreleasedHeader}\n- ${commit.replace(prefix, '')} ${sha}`
+        `${unreleasedHeader}\n- ${commit.replace(prefix, '')} ([commit](${sha}))`
       )
 
       await fs.writeFile(filePath, changelogContents)
