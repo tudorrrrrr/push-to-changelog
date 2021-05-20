@@ -53,6 +53,8 @@ const main = async () => {
       commits = processCommits(allCommits.data.commits)
     }
 
+    if (commits.length === 0) return
+
     const unreleasedHeader = '## Unreleased'
     if (!changelogContents.split('\n').find((l) => l.startsWith(unreleasedHeader))) {
       // add in the unreleased header
