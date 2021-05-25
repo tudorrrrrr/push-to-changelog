@@ -6076,7 +6076,7 @@ const getLastCommitSHA = (changelogContents) => {
 }
 
 const processCommits = (commitsData) => {
-  const prefix = core.getInput('prefix') || 'changelog: '
+  const prefix = core.getInput('prefix') || 'changelog'
 
   return commitsData
     .map((commit) => ({
@@ -6085,7 +6085,7 @@ const processCommits = (commitsData) => {
     }))
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
     .reverse()
-    .map((commit) => `${listItemPrefix}${commit.message.replace(prefix, '')} ([commit](${commit.sha}))`)
+    .map((commit) => `${listItemPrefix}${commit.message.replace(`${prefix}: `, '')} ([commit](${commit.sha}))`)
 }
 
 const main = async () => {
