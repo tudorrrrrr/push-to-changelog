@@ -8,7 +8,7 @@ inputs:
     description: 'Path to your changelog'
     required: true
   prefix:
-    description: 'What commits need to start with in order to be added to the changelog'
+    description: 'What commits need to start with to be added to the changelog'
 runs:
   using: 'node12'
   main: 'dist/index.js'
