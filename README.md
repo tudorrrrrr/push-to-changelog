@@ -2,7 +2,7 @@
 
 A GitHub action for automating changelogs.
 
-Every commit starting with a specified prefix (e.g. `changelog: add new feature`) gets added to your changelog file. You can then use the [update changelog version action](https://github.com/blackbullion/changelog-version-action) to group commits by the version they were released in.
+Every commit starting with a specified prefix (e.g. `changelog: add new feature`) gets added to your changelog file. You can then use the [update changelog version action](https://github.com/blackbullion/update-changelog-version) to group commits by the version they were released in.
 
 ## Inputs
 
@@ -12,28 +12,9 @@ Every commit starting with a specified prefix (e.g. `changelog: add new feature`
 | filePath    | no          | Path to your changelog. Default: `CHANGELOG.md`
 | prefix      | no          | What commits need to start with to be added to the changelog. Default: `changelog`
 
-## Example
-```
-on:
-  push:
-    branches:
-      - develop
-
-jobs:
-  push-to-changelog:
-    runs-on: ubuntu-latest
-    name: Push to changelog
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: blackbullion/push-to-changelog@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-```
-
 ## Changelog versioning
 
-This action goes hand-in-hand with our [update changelog version action](https://github.com/blackbullion/changelog-version-action). Here's an example of what this workflow could look like:
+This action goes hand-in-hand with our [update changelog version action](https://github.com/blackbullion/update-changelog-version). Here's an example of what this workflow could look like:
 
 On push to your development branch:
 
@@ -41,7 +22,7 @@ On push to your development branch:
 steps:
   - uses: actions/checkout@v2
 
-  - uses: tudorrrrrr/push-to-changelog@main
+  - uses: blackbullion/push-to-changelog@v1
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -56,7 +37,7 @@ steps:
     with:
       ref: develop
 
-  - uses: tudorrrrrr/update-changelog-version@main
+  - uses: blackbullion/update-changelog-version@v1
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
 
