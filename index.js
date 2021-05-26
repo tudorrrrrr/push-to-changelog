@@ -37,7 +37,7 @@ const main = async () => {
     const octokit = github.getOctokit(token)  
     const repo = github.context.repo
 
-    const filePath = core.getInput('filePath')
+    const filePath = core.getInput('filePath') || 'CHANGELOG.md'
     let changelogContents = await fs.readFile(filePath, 'utf8')
 
     let commits = []

@@ -6,7 +6,6 @@ inputs:
     required: true
   filePath:
     description: 'Path to your changelog'
-    required: true
   prefix:
     description: 'What commits need to start with to be added to the changelog'
 runs:
