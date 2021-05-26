@@ -7,9 +7,7 @@
     "@vercel/ncc": "^0.28.5"
   },
   "scripts": {
-    "build": "ncc build index.js --license licenses.txt",
-    "pretest": "yarn build",
-    "test": "act -s GITHUB_TOKEN -j testjob"
+    "build": "ncc build index.js --license licenses.txt"
   },
   "license": "MIT"
 }
