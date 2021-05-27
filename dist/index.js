@@ -6075,7 +6075,7 @@ const getLastCommitSHA = (changelogContents) => {
   }
 }
 
-const processCommits = (commitsData) => {
+const processCommits = (commitsData, changelogContents) => {
   const prefix = core.getInput('prefix') || 'changelog'
 
   return commitsData
@@ -6084,6 +6084,7 @@ const processCommits = (commitsData) => {
       sha: commit.html_url
     }))
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
+    .filter((commit) => !changelogContents.includes(commit.sha))
     .reverse()
     .map((commit) => `${listItemPrefix}${commit.message.replace(`${prefix}: `, '')} ([commit](${commit.sha}))`)
 }
@@ -6102,12 +6103,12 @@ const main = async () => {
     if (!base) {
       // if first entry into the changelog
       const commit = await octokit.rest.git.getCommit({ ...repo, commit_sha: github.context.sha })
-      commits = processCommits([ commit.data ])
+      commits = processCommits([ commit.data ], changelogContents)
     } else {
       const allCommits = await octokit.rest.repos.compareCommits({ ...repo, base, head: 'HEAD' })
       if (allCommits.data.commits.length === 0) throw new Error('No commits found')
 
-      commits = processCommits(allCommits.data.commits)
+      commits = processCommits(allCommits.data.commits, changelogContents)
     }
 
     if (commits.length === 0) return
