@@ -6086,7 +6086,7 @@ const processCommits = (commitsData, changelogContents) => {
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
     .filter((commit) => !changelogContents.includes(commit.sha))
     .reverse()
-    .map((commit) => `${listItemPrefix}${commit.message.replace(`${prefix}: `, '')} ([commit](${commit.sha}))`)
+    .map((commit) => `${listItemPrefix}${commit.message.replace(`${prefix}:`, '').trimEnd()} ([commit](${commit.sha}))`)
 }
 
 const main = async () => {
