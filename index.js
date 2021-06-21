@@ -20,6 +20,7 @@ const getLastCommitSHA = (changelogContents) => {
 }
 
 const processMessage = (message) => {
+  message = message.split('\n')[0]
   return message.replace(`${prefix}:`, '').trim().toLowerCase()
 }
 
