@@ -3,6 +3,7 @@ const github = require('@actions/github')
 const fs = require('fs').promises
 
 const listItemPrefix = '* '
+const prefix = core.getInput('prefix') || 'changelog'
 
 const getLastCommitSHA = (changelogContents) => {
   const availableLines = changelogContents
@@ -18,9 +19,11 @@ const getLastCommitSHA = (changelogContents) => {
   }
 }
 
-const processCommits = (commitsData, changelogContents) => {
-  const prefix = core.getInput('prefix') || 'changelog'
+const processMessage = (message) => {
+  return message.replace(`${prefix}:`, '').trim().toLowerCase()
+}
 
+const processCommits = (commitsData, changelogContents) => {
   return commitsData
     .map((commit) => ({
       message: commitsData.length == 1 ? commit.message : commit.commit.message,
@@ -29,7 +32,7 @@ const processCommits = (commitsData, changelogContents) => {
     .filter((commit) => commit.message.toLowerCase().startsWith(prefix))
     .filter((commit) => !changelogContents.includes(commit.sha))
     .reverse()
-    .map((commit) => `${listItemPrefix}${commit.message.replace(`${prefix}:`, '').trim()} ([commit](${commit.sha}))`)
+    .map((commit) => `${listItemPrefix}${processMessage(commit.message)} ([commit](${commit.sha}))`)
 }
 
 const main = async () => {
