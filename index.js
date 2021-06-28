@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const fs = require('fs').promises
+const capitalize = require('lodash.capitalize')
 
 const listItemPrefix = '* '
 const prefix = core.getInput('prefix') || 'changelog'
@@ -21,7 +22,7 @@ const getLastCommitSHA = (changelogContents) => {
 
 const processMessage = (message) => {
   message = message.split('\n')[0]
-  return message.replace(`${prefix}:`, '').trim().toLowerCase()
+  return capitalize(message.replace(`${prefix}:`, '').trim())
 }
 
 const processCommits = (commitsData, changelogContents) => {
