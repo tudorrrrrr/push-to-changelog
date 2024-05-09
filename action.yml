@@ -9,5 +9,5 @@ inputs:
   prefix:
     description: 'What commits need to start with to be added to the changelog'
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'
